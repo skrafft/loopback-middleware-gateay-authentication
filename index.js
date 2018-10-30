@@ -6,12 +6,15 @@ module.exports = function(options) {
     if (options.enabled === false) {
       return next();
     }
+    if (options.whitelist && Array.isArray(options.whitelist) && options.whitelist.indexOf(req.url)!==-1) {
+      return next();
+    }
     const headerVariableName = options.headerVariableName || 'x-gateway-token';
     const envVariableName = options.envVariableName || 'GATEWAY_TOKEN';
     const gatewayToken = process.env[envVariableName];
     if (gatewayToken && req.headers[headerVariableName] === gatewayToken) {
       return next();
     }
-    return res.status(403).send('Forbidden source');
+    return res.status(403).send('Forbidden');
   };
 };
